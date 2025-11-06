@@ -43,6 +43,15 @@ private:
             return right;
         }
     }
+    //used to prevent memory leaks
+    void destroy(Node* node){
+        if(node==nullptr){
+            destroy(node->left);
+            destroy(node->right);
+            delete node;
+        }
+
+    }
 
 
 public:
@@ -188,6 +197,9 @@ public:
 
     void printdepth(int x) {
       std::cout << getdepth(x) << std::endl;
+    }
+    ~ZipTree(){
+        destroy(root);
     }
 
 };
