@@ -46,10 +46,11 @@ private:
     //used to prevent memory leaks
     void destroy(Node* node){
         if(node==nullptr){
-            destroy(node->left);
-            destroy(node->right);
-            delete node;
+            return;
         }
+        destroy(node->left);
+        destroy(node->right);
+        delete node;
 
     }
 
