@@ -17,7 +17,6 @@ struct Node {
 class ZipTree {
 private:
     Node* root;
-    Node* node;
     int getRandomRank() {
         int rank = 0;
         // Keep flipping "heads" (rand() % 2 == 1)
@@ -35,22 +34,13 @@ private:
         if(right==nullptr){
             return left;
         }
-        if(left->rank>right->rank){
+        if(left->rank>right->rank|| (left->rank==right->rank && left->key<right->key)){
             left->right = zip(left->right, right);
             return left;
         }
-        else if(left->rank<right->rank){
-            right->left = zip(left, right->left);
-            return right;
-        }
         else{
-            if(left->key<right->key){
-                right->left= zip(left,right->left);
-            }
-            else{
-                left->right=zip(left->right,right);
-                return left;
-            }
+            right->left= zip(left,right->left);
+            return right;
         }
     }
 
@@ -77,7 +67,7 @@ public:
         Node* curr = root;
         Node* parent = nullptr;
         //stops when u.rank<r or u.rank==r ad u.key<x
-        while((curr !=nullptr && curr->rank>r) || (curr->rank==r && curr->key<x)){
+        while(curr !=nullptr && (curr->rank>r || (curr->rank==r && curr->key<x))){
             parent = curr;
             if(x<curr->key){
                 curr= curr->left;
