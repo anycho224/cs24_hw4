@@ -77,7 +77,7 @@ public:
         Node* curr = root;
         Node* parent = nullptr;
         //stops when u.rank<r or u.rank==r ad u.key<x
-        while(curr !=nullptr && curr->rank>r || (curr->rank==r && curr->key<x)){
+        while((curr !=nullptr && curr->rank>r) || (curr->rank==r && curr->key<x)){
             parent = curr;
             if(x<curr->key){
                 curr= curr->left;
