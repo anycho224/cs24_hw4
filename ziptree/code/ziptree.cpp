@@ -17,6 +17,7 @@ struct Node {
 class ZipTree {
 private:
     Node* root;
+    Node* node;
     int getRandomRank() {
         int rank = 0;
         // Keep flipping "heads" (rand() % 2 == 1)
@@ -27,6 +28,32 @@ private:
     }
 
     // Add your own private helper functions here.
+    Node *zip( Node*& left, Node*& right){
+        if(left==nullptr){
+            return right;
+        }
+        if(right==nullptr){
+            return left;
+        }
+        if(left->rank>right->rank){
+            left->right = zip(left->right, right);
+            return left;
+        }
+        else if(left->rank<right->rank){
+            right->left = zip(left, right->left);
+            return right;
+        }
+        else{
+            if(left->key<right->key){
+                right->left= zip(left,right->left);
+            }
+            else{
+                left->right=zip(left->right,right);
+                return left;
+            }
+        }
+    }
+
 
 public:
     ZipTree() : root(nullptr) {
@@ -43,21 +70,104 @@ public:
 
     // Insert key x with a specified rank r.
     void insert_with_rank(int x, int r) {
-        // TODO
+        if(root ==nullptr){
+            root = new Node(x,r);
+            return;
+        }
+        Node* curr = root;
+        Node* parent = nullptr;
+        //stops when u.rank<r or u.rank==r ad u.key<x
+        while(curr !=nullptr && curr->rank>r || (curr->rank==r && curr->key<x)){
+            parent = curr;
+            if(x<curr->key){
+                curr= curr->left;
+            }
+            else if (x>curr->key){
+                curr = curr->right;
+            }
+        }
+        //unzips
+        //p=keys<x q=keys>x
+        Node* p = nullptr;
+        Node* q = nullptr;
+        Node** p_next= &p;
+        Node** q_next = &q;
+        while(curr!=nullptr){
+            if(curr->key<x){
+                *p_next=curr;
+                p_next=&curr->right;
+                curr=curr->right;
+            }
+            else{
+                *q_next= curr;
+                q_next=&curr->left;
+                curr=curr->left;
+            }
+        }
+        *p_next= nullptr;
+        *q_next=nullptr;
+        Node* newNode = new Node(x,r);
+        newNode->left=p;
+        newNode->right=q;
+        if(parent == nullptr){
+            root = newNode;
+        }
+        else if(x<parent->key){
+            parent->left= newNode;
+        }
+        else{
+            parent->right= newNode;
+        }
     }
 
     // Delete the node with value x.
     void delete_val(int x) {
-      // TODO
+        Node* curr=root;
+        Node* parent = nullptr;
+        while(curr!= nullptr && curr->key!=x){
+            parent=curr;
+            if(x<curr->key){
+                curr=curr->left;
+            }
+            else{
+                curr=curr->right;
+            }
+        }
+        if(curr == nullptr){
+            return;
+        }
+        Node* merged = zip(curr->left, curr->right);
+        delete curr;
+        if(parent == nullptr){
+            root= merged;
+        }
+        else if(x<parent->key){
+            parent->left= merged;
+        }
+        else{
+            parent->right = merged;
+        }
     }
 
     // Determine whether the tree contains x.
     bool contains(int x) {
-      // TODO
+      Node* curr= root;
+      while(curr != nullptr){
+        if(x==curr->key){
+            return true;
+        }
+        else if(x<curr->key){
+            curr=curr->left;
+        }
+        else{
+            curr=curr->right;
+        }
+      }
+      return false;
     }
 
     void printcontains(int x) {
-      if contains(x){
+      if (contains(x)){
         std::cout <<"true" << std::endl;
       }
       else {
@@ -68,7 +178,22 @@ public:
     // Finds the depth of the node x in the tree.
     // If it's not in the tree, then return -1.
     int getdepth(int x) {
-        // TODO
+        int depth=0;
+        Node* curr=root;
+        while(curr !=nullptr){
+            if(x==curr->key){
+                return depth;
+            }
+            else if(x<curr->key){
+                curr= curr->left;
+            }
+            else{
+                curr= curr->right;
+            }
+            depth++;
+        }
+        return -1;
+
     }
 
     void printdepth(int x) {
